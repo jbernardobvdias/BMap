@@ -1,0 +1,1 @@
+int parse_csv(const char* path, int* out, int count);

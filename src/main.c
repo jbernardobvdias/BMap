@@ -5,6 +5,7 @@
 
 #include "model/string_list.h"
 #include "data/args.h"
+#include "data/csv.h"
 
 struct option long_opts[] = {
     {"port",    required_argument, 0, 'p'},
@@ -31,6 +32,11 @@ int main(int argc, char *argv[]) {
             default:
                 break;
         }
+    }
+
+    int values[1000];
+    if (parse_csv("assets/ports.csv", values, 222) == 0) {
+        printf("%d, %d, %d\n", values[0], values[1], values[2]);
     }
 
     return 0;
