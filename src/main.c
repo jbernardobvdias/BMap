@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     }
 
     int values[1000];
-    if (parse_csv("assets/ports.csv", values, 222) == 0) {
+    if (parse_csv("assets/ports.csv", values, 1000) == 0) {
         printf("%d, %d, %d\n", values[0], values[1], values[2]);
     }
 
