@@ -1,5 +1,5 @@
-#ifndef STRING_LIST_H
-#define STRING_LIST_H
+#ifndef STRING_LIST_H_
+#define STRING_LIST_H_
 
 #define MAX_ITEMS 64
 #define MAX_LEN 64
