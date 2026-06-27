@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-/* Pseudo header required by the TCP checksum algorithm (RFC 793) */
+// Pseudo header required by the TCP checksum algorithm (RFC 793)
 struct pseudo_header {
     uint32_t source_address;
     uint32_t dest_address;
@@ -40,14 +40,8 @@ static unsigned short checksum(unsigned short *ptr, int nbytes) {
     return answer;
 }
 
-/*
- * Sends a single SYN packet to local_ip/source_port -> target_ip/target_port
- * and deliberately does NOT complete the handshake (no ACK is ever sent).
- *
- * Requires root or CAP_NET_RAW, since raw sockets bypass the normal
- * connection-tracking the kernel does for you. Only run this against
- * hosts/networks you own or have explicit permission to test.
- */
+// Sends a single SYN packet and deliberately does NOT complete the handshake (no ACK is ever sent).
+// Requires root or CAP_NET_RAW, since raw sockets bypass the normal connection-tracking the kernel does for you.
 int half_open_tcp(const char *local_ip, const char *target_ip, unsigned short target_port) {
     int sockfd;
     char packet[4096];
@@ -70,7 +64,7 @@ int half_open_tcp(const char *local_ip, const char *target_ip, unsigned short ta
     dest.sin_port = htons(target_port);
     dest.sin_addr.s_addr = inet_addr(target_ip);
 
-    /* --- IP header --- */
+    // IP header
     iph->ihl = 5;
     iph->version = 4;
     iph->tos = 0;
@@ -83,7 +77,7 @@ int half_open_tcp(const char *local_ip, const char *target_ip, unsigned short ta
     iph->saddr = inet_addr(local_ip);
     iph->daddr = dest.sin_addr.s_addr;
 
-    /* --- TCP header --- */
+    // TCP header
     tcph->source = htons(source_port);
     tcph->dest = htons(target_port);
     tcph->seq = htonl(0);
@@ -94,7 +88,7 @@ int half_open_tcp(const char *local_ip, const char *target_ip, unsigned short ta
     tcph->check = 0;
     tcph->urg_ptr = 0;
 
-    /* --- TCP checksum, computed over a pseudo header + the TCP segment --- */
+    // TCP checksum, computed over a pseudo header + the TCP segment
     psh.source_address = iph->saddr;
     psh.dest_address = iph->daddr;
     psh.placeholder = 0;

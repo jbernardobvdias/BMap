@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11
+CFLAGS = -Wall -Wextra -Isrc -std=c11
 
 TARGET = build/main
 SRC := $(shell find src -name '*.c')
