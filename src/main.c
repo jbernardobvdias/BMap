@@ -34,9 +34,16 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    int values[1000];
-    if (parse_csv("assets/ports.csv", values, 1000) == 0) {
-        printf("%d, %d, %d\n", values[0], values[1], values[2]);
+    if (ips.count == 0) {
+        ips = findTargets();
+    }
+
+    if (ports.count == 0) {
+        parse_csv("assets/ports.csv", &ports, 1000);
+    }
+
+    for (int i = 0; i < ips.count; i++) {
+        findPorts(ips.items[i], ports);
     }
 
     return 0;

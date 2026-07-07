@@ -1,5 +1,7 @@
 #include "tcp.h"
 
+#include "model/tcp_header.h"
+
 #include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
@@ -9,15 +11,6 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
-// Pseudo header required by the TCP checksum algorithm (RFC 793)
-struct pseudo_header {
-    uint32_t source_address;
-    uint32_t dest_address;
-    uint8_t  placeholder;
-    uint8_t  protocol;
-    uint16_t tcp_length;
-};
 
 static unsigned short checksum(unsigned short *ptr, int nbytes) {
     long sum = 0;
@@ -48,8 +41,8 @@ int half_open_tcp(const char *local_ip, const char *target_ip, unsigned short ta
     struct iphdr *iph = (struct iphdr *)packet;
     struct tcphdr *tcph = (struct tcphdr *)(packet + sizeof(struct iphdr));
     struct sockaddr_in dest;
-    struct pseudo_header psh;
-    char pseudogram[sizeof(struct pseudo_header) + sizeof(struct tcphdr)];
+    struct tcp_header psh;
+    char pseudogram[sizeof(struct tcp_header) + sizeof(struct tcphdr)];
     unsigned short source_port = 54321; /* arbitrary ephemeral-style port */
 
     memset(packet, 0, sizeof(packet));
@@ -95,8 +88,8 @@ int half_open_tcp(const char *local_ip, const char *target_ip, unsigned short ta
     psh.protocol = IPPROTO_TCP;
     psh.tcp_length = htons(sizeof(struct tcphdr));
 
-    memcpy(pseudogram, &psh, sizeof(struct pseudo_header));
-    memcpy(pseudogram + sizeof(struct pseudo_header), tcph, sizeof(struct tcphdr));
+    memcpy(pseudogram, &psh, sizeof(struct tcp_header));
+    memcpy(pseudogram + sizeof(struct tcp_header), tcph, sizeof(struct tcphdr));
     tcph->check = checksum((unsigned short *)pseudogram, sizeof(pseudogram));
 
     // Tell the kernel "I've already built the IP header myself"
